@@ -132,7 +132,7 @@ export default function HomeView({ notes, onOpenNote, onOpenUpload, onOpenSearch
         </section>
 
         {/* Usage Stats */}
-        <section className="bg-slate-800 rounded-[20px] p-6 text-white shadow-[0_12px_40px_rgb(0,0,0,0.12)] relative overflow-hidden">
+        <section className="bg-black rounded-[20px] p-6 text-white shadow-[0_12px_40px_rgb(0,0,0,0.12)] relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-40 h-40 bg-white/5 rounded-full blur-2xl pointer-events-none" />
           <div className="flex items-center justify-between mb-6 relative z-10">
             <div className="flex items-center gap-2">

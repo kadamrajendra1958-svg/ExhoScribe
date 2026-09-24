@@ -19,7 +19,7 @@ import { storage } from '@/lib/firebase';
 import { saveNote, saveNotification, subscribeToNotes } from '@/lib/db';
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, userProfile, loading } = useAuth();
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [activeNote, setActiveNote] = useState<Note | null>(null);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -68,6 +68,11 @@ function AppContent() {
         formData.append('uid', currentUser.uid);
       }
       formData.append('taskId', taskId);
+
+      const preferredLanguage = userProfile?.languageSettings?.autoDetect 
+        ? 'Auto-detect' 
+        : (userProfile?.languageSettings?.defaultSpokenLanguage || 'English');
+      formData.append('language', preferredLanguage);
 
       const aiResult = await new Promise<any>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -184,7 +189,7 @@ function AppContent() {
          setUploadTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: 'failed', error: error.message || 'Upload failed' } : t));
       }
     }
-  }, []);
+  }, [userProfile]);
 
   const addUploadTasks = useCallback((files: File[]) => {
     const newTasks: UploadTask[] = files.map(file => ({

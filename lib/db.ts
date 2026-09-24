@@ -1,6 +1,6 @@
 import { db } from './firebase';
 import { collection, doc, setDoc, getDocs, deleteDoc, query, where, orderBy, onSnapshot, getDoc } from 'firebase/firestore';
-import { Note, Workspace, Folder, Comment, Notification } from '@/types';
+import { Note, Workspace, Folder, Comment, Notification, UserProfile } from '@/types';
 
 // Simple retry helper
 const withRetry = async <T>(fn: () => Promise<T>, retries = 3, backoff = 1000): Promise<T> => {
@@ -148,3 +148,37 @@ export function subscribeToNotifications(userId: string, callback: (notifs: Noti
     if (onError) onError(error);
   });
 }
+
+export async function saveUserProfile(userId: string, profileData: Partial<UserProfile>) {
+  const userRef = doc(db, 'users', userId);
+  await withRetry(() => setDoc(userRef, { ...profileData, updatedAt: new Date().toISOString() }, { merge: true }));
+}
+
+export async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
+  try {
+    const userRef = doc(db, 'users', userId);
+    const snap = await withRetry(() => getDoc(userRef));
+    if (snap.exists()) {
+      return snap.data() as UserProfile;
+    }
+    return null;
+  } catch (err: any) {
+    console.error("Error fetching user profile:", err);
+    return null;
+  }
+}
+
+export function subscribeToUserProfile(userId: string, callback: (profile: UserProfile | null) => void, onError?: (error: Error) => void) {
+  const userRef = doc(db, 'users', userId);
+  return onSnapshot(userRef, (snapshot) => {
+    if (snapshot.exists()) {
+      callback(snapshot.data() as UserProfile);
+    } else {
+      callback(null);
+    }
+  }, (error) => {
+    console.error("Error subscribing to user profile:", error);
+    if (onError) onError(error);
+  });
+}
+

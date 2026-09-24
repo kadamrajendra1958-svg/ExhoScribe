@@ -65,3 +65,34 @@ export type Notification = {
   createdAt: string;
   link?: string;
 };
+
+export type UserProfile = {
+  uid: string;
+  displayName?: string;
+  email?: string;
+  photoURL?: string;
+  languageSettings?: {
+    uiLanguage: string;
+    defaultSpokenLanguage: string;
+    autoDetect: boolean;
+  };
+  aiPreferences?: {
+    summaryStyle: string;
+    autoExtractActionItems: boolean;
+    sentimentAnalysis: boolean;
+  };
+  transcriptionQuality?: 'high' | 'standard';
+  notifications?: {
+    recordingCompleted: boolean;
+    aiProcessingFinished: boolean;
+    newComments: boolean;
+    meetingReminders: boolean;
+    weeklySummary: boolean;
+    workspaceInvitations: boolean;
+  };
+  privacyControls?: {
+    allowAiTraining: boolean;
+    shareAnalytics: boolean;
+  };
+  updatedAt?: string;
+};

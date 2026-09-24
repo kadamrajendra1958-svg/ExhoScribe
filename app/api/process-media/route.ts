@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
     let fileUrl = '';
     let fileName = 'upload.tmp';
     let mimeType = 'audio/mp3';
+    let language = 'Auto-detect';
     
     if (contentType.includes('application/json')) {
       const body = await req.json();
@@ -25,6 +26,7 @@ export async function POST(req: NextRequest) {
       fileName = body.fileName || fileName;
       mimeType = body.mimeType || mimeType;
       model = body.model || model;
+      language = body.language || language;
       
       if (!fileUrl) {
         return NextResponse.json({ error: 'No fileUrl provided' }, { status: 400 });
@@ -45,6 +47,7 @@ export async function POST(req: NextRequest) {
       const formData = await req.formData();
       const file = formData.get('file') as File | null;
       model = (formData.get('model') as string) || model;
+      language = (formData.get('language') as string) || language;
       
       if (!file) {
         return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -87,7 +90,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Create prompt for AI
-    const prompt = `Analyze this audio/video recording. Generate a detailed transcript with speakers and timestamps. Also generate a summary, a list of action items, decisions made, tasks identified, chapters with timestamps, keywords, and overall sentiment.
+    const prompt = `Analyze this audio/video recording.
+Target Spoken Language: ${language}.
+Note: The recording may be in an Indian language (such as Hindi, Tamil, Telugu, Marathi, Bengali, Gujarati, Kannada, Malayalam, Punjabi, Odia, Assamese, Urdu, etc.) or a worldwide language. If a language is specified or detected, accurately transcribe in that spoken language preserving proper words and speaker nuances in its appropriate script or Latin representation.
+Generate a detailed transcript with speakers and timestamps. Also generate a summary, a list of action items, decisions made, tasks identified, chapters with timestamps, keywords, and overall sentiment.
 Return the result in this exact JSON structure:
 {
   "duration": "string (MM:SS)",
